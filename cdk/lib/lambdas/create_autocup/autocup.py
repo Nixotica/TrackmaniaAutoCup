@@ -1,6 +1,6 @@
 import datetime
 import json
-import os.path
+import os
 import requests as requests
 
 import logging
@@ -53,7 +53,7 @@ def get_random_map_uid() -> str:
 
 
 def lambda_handler(event, context):
-    payload = json.load(open(os.path.join(os.path.curdir, "../payloads/CreateEvent.json")))
+    payload = json.load(open(os.path.join(os.path.curdir, "CreateEvent.json")))
 
     token = authenticate("NadeoClubServices", os.environ["AUTHORIZATION"])
 
@@ -91,7 +91,3 @@ def lambda_handler(event, context):
         headers=club_services_header,
         json=payload
     ).json()
-    print(response)
-
-
-lambda_handler(None, None)

@@ -1,25 +1,36 @@
+import os
+
 from aws_cdk import (
-    core,
+    Duration,
+    Stack,
     aws_lambda as lambda_,
     aws_events as events,
-    aws_events_targets as targets
+    aws_events_targets as targets,
+    aws_lambda_python_alpha as _alambda
 )
 
-class MyStack(core.Stack):
-    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+from constructs import Construct
+
+class AutocupStack(Stack):
+    def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         # Create the Lambda function
-        my_lambda = lambda_.Function(
-            self, "MyLambda",
+        my_lambda = _alambda.PythonFunction(
+            self, "CreateEventLambda",
             runtime=lambda_.Runtime.PYTHON_3_8,
-            handler="index.handler",
-            code=lambda_.Code.from_asset("lambda_function")
+            entry="./lib/lambdas/create_autocup/",
+            index="autocup.py",
+            handler="lambda_handler",
+            timeout=Duration.minutes(1),
+            environment={
+                "AUTHORIZATION": os.environ["AUTHORIZATION"]
+            }
         )
 
         # Create the EventBridge scheduler
         rule = events.Rule(
-            self, "MyRule",
+            self, "TriggerEventCreation",
             schedule=events.Schedule.cron(
                 week_day="SUN",
                 hour="20",

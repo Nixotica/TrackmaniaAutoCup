@@ -37,6 +37,18 @@ Once the virtualenv is activated, you can install the required dependencies.
 $ pip install -r requirements.txt
 ```
 
+For the sake of this project, make sure to set your Ubisoft authorization as an environment variable.
+
+```
+AUTHORIZATION="Basic <email:password_Base64>"
+```
+
+Also make sure you have docker installed and are running the daemon (you can open a new window/terminal to do this).
+
+```
+sudo dockerd
+```
+
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
