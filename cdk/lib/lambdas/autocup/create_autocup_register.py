@@ -3,6 +3,7 @@ import json
 import os
 import requests as requests
 import openai
+import boto3
 
 import logging
 logger = logging.getLogger()
@@ -54,13 +55,13 @@ def get_random_map_uid() -> str:
 
 
 def get_dalle_image():
-    openai.api_key = os.environ["OPENAI_API_KEY"]
-    openai.organization = "org-9V4tGXWOzaSi05eAE3eifl96"
-    response = openai.Image.create(
-        prompt="A logo for a racing event called Auto Cup",
-        n=1,
-        size="1024x1024"
-    )
+    # openai.api_key = os.environ["OPENAI_API_KEY"]
+    # openai.organization = "org-9V4tGXWOzaSi05eAE3eifl96"
+    # response = openai.Image.create(
+    #     prompt="A logo for a racing event called Auto Cup",
+    #     n=1,
+    #     size="1024x1024"
+    # )
     # TODO figure out what format it wants this in then uncomment below and remove override
     # image_url = response['data'][0]['url']
     image_url = "https://oaidalleapiprodscus.blob.core.windows.net/private/org-9V4tGXWOzaSi05eAE3eifl96/user-hi2D2KVJfYNa0jE0yC8oJvyt/img-GN1CD420xyVq9RbBecMOKOjk.png?st=2023-02-28T06%3A15%3A39Z&se=2023-02-28T08%3A15%3A39Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-02-28T06%3A48%3A29Z&ske=2023-03-01T06%3A48%3A29Z&sks=b&skv=2021-08-06&sig=DfIaHBGNv8TREE4rptRtGamWhhY/D7zHoLv6GYfkXQo%3D"
@@ -76,7 +77,7 @@ def lambda_handler(event, context):
     token = authenticate("NadeoClubServices", os.environ["AUTHORIZATION"])
     club_services_header = {"Authorization": "nadeo_v1 t=" + token}
 
-    payload = json.load(open(os.path.join(os.path.curdir, "CreateEvent.json")))
+    payload = json.load(open(os.path.join(os.path.curdir, "CreateEvent8.json")))
 
     date_format = "%Y-%m-%dT%H:%M:%S.000Z"
     now = datetime.datetime.now(datetime.timezone.utc)
