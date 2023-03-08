@@ -1,9 +1,9 @@
 import requests
+import os
 import json
 
 def lambda_handler(event, context):
-    # TODO post to s3 and retrieve
-    webhook_url = "notyourwebhook"
+    webhook_url = os.environ["DISCORD_WEBHOOK_URL"]
 
     data = {
         "content": f"<@&1080011219043360819> Another edition of Auto Cup will be starting in 1 hour! Join \"Auto Events\" Club to play!"

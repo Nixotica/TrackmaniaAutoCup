@@ -1,9 +1,7 @@
 {
-    "clubId": 263,
+    "clubId": 58261,
     "description": "Automatically generated cup",
     "name": "Auto Cup",
-    "registrationEndDate": "2023-02-18T06:47:00.000Z",
-    "registrationStartDate": "2023-02-18T06:23:00.000Z",
     "rounds": [
       {
         "name": "round 1",

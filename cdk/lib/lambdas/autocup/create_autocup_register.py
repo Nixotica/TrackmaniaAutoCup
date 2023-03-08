@@ -9,6 +9,7 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+s3_client = boto3.client('s3', region_name='us-west-2')
 
 def authenticate(service: str, auth: str) -> str:
     """
@@ -54,7 +55,7 @@ def get_random_map_uid() -> str:
     return map_info["results"][0]["TrackUID"]
 
 
-def get_dalle_image():
+def get_dalle_image_and_upload_s3():
     # openai.api_key = os.environ["OPENAI_API_KEY"]
     # openai.organization = "org-9V4tGXWOzaSi05eAE3eifl96"
     # response = openai.Image.create(
@@ -68,6 +69,29 @@ def get_dalle_image():
     image_filename = "generated_image.png"
     with open(image_filename, "wb") as f:
         f.write(requests.get(image_url).content)
+
+    with open(image_filename, "rb") as f:
+        try:
+            s3_client.put_object(
+                Bucket=os.environ['STORAGE_BUCKET_NAME'],
+                Key="logo.png",
+                Body=f
+            )       
+        except s3_client.exceptions.NoSuchBucket:
+            s3_client.create_bucket(
+                Bucket=os.environ['STORAGE_BUCKET_NAME'],
+                CreateBucketConfiguration={
+                    "LocationConstraint": "us-west-2"
+                }
+            )
+
+            s3_client.put_object(
+                Bucket=os.environ['STORAGE_BUCKET_NAME'],
+                Key="logo.png",
+                Body=f
+            )    
+
+    
     with open(image_filename, "rb") as f:
         files = {"image": (image_filename, f.read(), "image/png")}
     return files
@@ -77,18 +101,18 @@ def lambda_handler(event, context):
     token = authenticate("NadeoClubServices", os.environ["AUTHORIZATION"])
     club_services_header = {"Authorization": "nadeo_v1 t=" + token}
 
-    payload = json.load(open(os.path.join(os.path.curdir, "CreateEvent8.json")))
+    payload = json.load(open(os.path.join(os.path.curdir, "CreateRegistrationEvent8.json")))
 
     date_format = "%Y-%m-%dT%H:%M:%S.000Z"
     now = datetime.datetime.now(datetime.timezone.utc)
     registrationStart = datetime.datetime.strftime(now + datetime.timedelta(minutes=1), date_format)
-    registrationEnd = datetime.datetime.strftime(now + datetime.timedelta(minutes=5), date_format)
-    qualifierStart = datetime.datetime.strftime(now + datetime.timedelta(minutes=6), date_format)
-    qualifierEnd = datetime.datetime.strftime(now + datetime.timedelta(minutes=15), date_format)
-    round1Start = datetime.datetime.strftime(now + datetime.timedelta(minutes=16), date_format)
-    round1End = datetime.datetime.strftime(now + datetime.timedelta(minutes=25), date_format)
-    round2Start = datetime.datetime.strftime(now + datetime.timedelta(minutes=26), date_format)
-    round2End = datetime.datetime.strftime(now + datetime.timedelta(minutes=35), date_format)
+    registrationEnd = datetime.datetime.strftime(now + datetime.timedelta(hours=24), date_format)
+    qualifierStart = datetime.datetime.strftime(now + datetime.timedelta(hours=24, minutes=1), date_format)
+    qualifierEnd = datetime.datetime.strftime(now + datetime.timedelta(hours=24, minutes=2), date_format)
+    round1Start = datetime.datetime.strftime(now + datetime.timedelta(hours=24, minutes=16), date_format)
+    round1End = datetime.datetime.strftime(now + datetime.timedelta(hours=24, minutes=25), date_format)
+    round2Start = datetime.datetime.strftime(now + datetime.timedelta(hours=24, minutes=26), date_format)
+    round2End = datetime.datetime.strftime(now + datetime.timedelta(hours=24, minutes=35), date_format)
 
     qualifierMap = get_random_map_uid()
     round1Map = get_random_map_uid()
@@ -112,12 +136,18 @@ def lambda_handler(event, context):
         headers=club_services_header,
         json=payload
     ).json()
-    comp_id = response["competition"]["id"]
+    comp_id: int = response["competition"]["id"]
 
-    image_files = get_dalle_image()
+    image_files = get_dalle_image_and_upload_s3()
+
+    s3_client.put_object(
+        Bucket=os.environ['STORAGE_BUCKET_NAME'],
+        Key="comp_id",
+        Body=comp_id.to_bytes(32, 'big')
+    )
 
     upload_logo_url = f"https://competition.trackmania.nadeo.club/api/competitions/{comp_id}/upload/logo"
-    requests.post(
+    response = requests.post(
         url=upload_logo_url,
         headers=club_services_header,
         files=image_files
