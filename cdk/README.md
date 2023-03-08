@@ -49,6 +49,12 @@ Also make sure you have docker installed and are running the daemon (you can ope
 sudo dockerd
 ```
 
+You might need to run this to access the socket:
+
+```
+chmod 777 /var/run/docker.sock
+```
+
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```

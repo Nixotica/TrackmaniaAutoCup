@@ -138,17 +138,17 @@ def lambda_handler(event, context):
     ).json()
     comp_id: int = response["competition"]["id"]
 
-    image_files = get_dalle_image_and_upload_s3()
+    # image_files = get_dalle_image_and_upload_s3()
+
+    # upload_logo_url = f"https://competition.trackmania.nadeo.club/api/competitions/{comp_id}/upload/logo"
+    # response = requests.post(
+    #     url=upload_logo_url,
+    #     headers=club_services_header,
+    #     files=image_files
+    # )
 
     s3_client.put_object(
         Bucket=os.environ['STORAGE_BUCKET_NAME'],
         Key="comp_id",
         Body=comp_id.to_bytes(32, 'big')
-    )
-
-    upload_logo_url = f"https://competition.trackmania.nadeo.club/api/competitions/{comp_id}/upload/logo"
-    response = requests.post(
-        url=upload_logo_url,
-        headers=club_services_header,
-        files=image_files
     )

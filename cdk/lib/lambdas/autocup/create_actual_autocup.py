@@ -63,7 +63,7 @@ def lambda_handler(event, context):
 
     # Get the logo and competition id from s3
     bucket = s3_resource.Bucket(os.environ['STORAGE_BUCKET_NAME'])
-    logo = bucket.Object('logo.png').get()['Body']
+    # logo = bucket.Object('logo.png').get()['Body']
     comp_id = int.from_bytes(bucket.Object('comp_id').get()['Body'].read(), 'big')
 
     # Get the registered players from original competition
@@ -84,11 +84,11 @@ def lambda_handler(event, context):
     date_format = "%Y-%m-%dT%H:%M:%S.000Z"
     now = datetime.datetime.now(datetime.timezone.utc)
     qualifierStart = datetime.datetime.strftime(now + datetime.timedelta(minutes=1), date_format)
-    qualifierEnd = datetime.datetime.strftime(now + datetime.timedelta(minutes=12), date_format)
-    round1Start = datetime.datetime.strftime(now + datetime.timedelta(minutes=16), date_format)
-    round1End = datetime.datetime.strftime(now + datetime.timedelta(minutes=25), date_format)
-    round2Start = datetime.datetime.strftime(now + datetime.timedelta(minutes=26), date_format)
-    round2End = datetime.datetime.strftime(now + datetime.timedelta(minutes=35), date_format)
+    qualifierEnd = datetime.datetime.strftime(now + datetime.timedelta(minutes=11), date_format)
+    round1Start = datetime.datetime.strftime(now + datetime.timedelta(minutes=12), date_format)
+    round1End = datetime.datetime.strftime(now + datetime.timedelta(minutes=30), date_format)
+    round2Start = datetime.datetime.strftime(now + datetime.timedelta(minutes=31), date_format)
+    round2End = datetime.datetime.strftime(now + datetime.timedelta(minutes=50), date_format)
 
     qualifierMap = get_random_map_uid()
     round1Map = get_random_map_uid()
@@ -118,14 +118,14 @@ def lambda_handler(event, context):
         Body=comp_id.to_bytes(32, 'big')
     )
 
-    image_files = {"image": logo}
+    # image_files = {"image": logo}
 
-    upload_logo_url = f"https://competition.trackmania.nadeo.club/api/competitions/{comp_id}/upload/logo"
-    response = requests.post(
-        url=upload_logo_url,
-        headers=club_services_header,
-        files=image_files
-    )
+    # upload_logo_url = f"https://competition.trackmania.nadeo.club/api/competitions/{comp_id}/upload/logo"
+    # response = requests.post(
+    #     url=upload_logo_url,
+    #     headers=club_services_header,
+    #     files=image_files
+    # )
 
     # Add registrants
     add_registrants_payload = {}
