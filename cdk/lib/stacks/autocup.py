@@ -52,6 +52,7 @@ class AutoCupStack(Stack):
         trigger_create_event_register = events.Rule(
             self, "TriggerCreateEventRegister",
             schedule=events.Schedule.cron(
+                week_day="MON",
                 hour="0",
                 minute="1"
             )
@@ -79,6 +80,7 @@ class AutoCupStack(Stack):
         notify_event_schedule = events.Rule(
             self, "TriggerNotification60Min",
             schedule=events.Schedule.cron(
+                week_day="SUN",
                 hour="19",
                 minute="0"
             )
@@ -106,6 +108,7 @@ class AutoCupStack(Stack):
         trigger_create_actual_event = events.Rule(
             self, "TriggerCreateActualEvent",
             schedule=events.Schedule.cron(
+                week_day="SUN",
                 hour="19",
                 minute="59"
             )
@@ -134,6 +137,7 @@ class AutoCupStack(Stack):
         trigger_delete_event = events.Rule(
             self, "TriggerDeleteEvent",
             schedule=events.Schedule.cron(
+                week_day="SUN",
                 hour="23",
                 minute="59"
             )
